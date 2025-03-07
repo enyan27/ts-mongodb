@@ -16,38 +16,48 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { createProduct } from "@/lib/actions/products";
+import { createProduct, updateProduct } from "@/lib/actions/products";
 import { useRouter } from "next/navigation";
+import Product from "@/lib/models/product";
 
 export const revalidate = 1;
 
 export default function AddProduct({
   edit,
   id,
+  product,
 }: {
   edit?: boolean;
   id?: string;
+  product?: Product;
 }) {
   const title = edit ? "Edit Product " + id : "Add Product";
   const subText = edit
     ? "Update the details of your product here."
     : "Add a new product to your store.";
 
-  const [images, setImages] = useState<string[]>([]);
-  const [name, setName] = useState("");
-  const [price, setPrice] = useState(0);
-  const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("electronics");
+  const [name, setName] = useState(product?.name || "");
+  const [price, setPrice] = useState(product?.price || 0);
+  const [description, setDescription] = useState(product?.description || "");
+  const [category, setCategory] = useState(product?.category || "electronics");
+  const [images, setImages] = useState<string[]>(product?.images || []);
 
   const router = useRouter();
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
     try {
-      const newProductId = await createProduct({ name, category, description, price, images });
-
-      router.push(`/product/view/${newProductId}`);
+      // if editing a product, update the product
+      if (edit && product && id) {
+        const productId = await updateProduct(id, { name, category, description, price, images });
+        router.push(`/product/view/${productId}`);
+      } else {
+        // else, create a new product
+        const newProductId = await createProduct({ name, category, description, price, images });
+        router.push(`/product/view/${newProductId}`);
+      }
     } catch (error) {
+      // show some toast or alert to the user
       console.error("Error creating product:", error);
     }
   };
@@ -73,7 +83,7 @@ export default function AddProduct({
             <div className="grid gap-2">
               <Label htmlFor="category">Category</Label>
               <Select
-                onValueChange={(value: string) => setCategory(value)}
+                onValueChange={(value) => setCategory(value)}
                 defaultValue={category}
               >
                 <SelectTrigger>
@@ -108,11 +118,11 @@ export default function AddProduct({
               rows={5}
             />
           </div>
-          <ImageSelect onChange={(value) => setImages(value)} />
+          <ImageSelect defaultValue={images} onChange={(value) => setImages(value)} />
         </div>
         <div className="flex justify-end gap-2">
-          <Button variant="outline">Cancel</Button>
-          <Button>Save Changes</Button>
+          <Button type="button" variant="outline" onClick={() => router.push(`/product/view/${id}`)}>Cancel</Button>
+          <Button type="submit">Save Changes</Button>
         </div>
       </form>
     </div>

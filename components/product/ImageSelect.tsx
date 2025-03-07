@@ -8,11 +8,13 @@ import { Label } from "@/components/ui/label";
 
 export default function ImageSelect({
   onChange,
+  defaultValue
 }: {
   onChange: (value: string[]) => void;
+  defaultValue?: string[];
 }) {
-  const [numImages, setNumImages] = useState(1);
-  const [images, setImages] = useState<string[]>([]);
+  const [numImages, setNumImages] = useState(defaultValue?.length || 1);
+  const [images, setImages] = useState<string[]>(defaultValue || []);
   const handleAddImage = () => {
     setNumImages(numImages + 1);
   };
@@ -43,6 +45,7 @@ export default function ImageSelect({
               onChange={(e) => handleImageChange(index, e.target.value)}
             />
             <Button
+              type="button"
               size="icon"
               variant="outline"
               onClick={() => handleImageRemove(index)}
@@ -52,7 +55,7 @@ export default function ImageSelect({
             </Button>
           </div>
         ))}
-        <Button size="icon" variant="outline" onClick={handleAddImage}>
+        <Button type="button" size="icon" variant="outline" onClick={handleAddImage}>
           <PlusIcon className="h-4 w-4" />
           <span className="sr-only">Add Image</span>
         </Button>

@@ -16,19 +16,20 @@ export default async function Page({ params }: { params: { path: string[] } }) {
   if (method === "new") {
     return <AddProduct />;
   }
+
+  // Get product detail
+  const product = await getProductById(id);
+  if (!product) return <div>Product not found</div>;
+  // Get reviews and average rating for product
+  const { reviews, averageRating } = await getReviewsAndRating(id);
+
+
   if (method === "edit") {
-    return <AddProduct edit id={id} />;
+    return <AddProduct edit id={id} product={product} />;
   }
   if (method === "delete") {
     return <DeleteProduct id={id} />;
   }
-
-  const product = await getProductById(id);
-  if (!product) {
-    return <div>Product not found</div>;
-  }
-
-  const { reviews, averageRating } = await getReviewsAndRating(id);
 
   return (
     <div className="pt-20 grid md:grid-cols-2 gap-8 max-w-6xl mx-auto py-12 px-4">
