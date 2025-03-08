@@ -30,7 +30,7 @@ export default function ImageDisplay({ images }: { images: string[] }) {
         <CarouselContent>
           {/* map over the images */}
           {images.map((image, index) => (
-            <CarouselItem key={index}>
+            <CarouselItem key={index} className="relative aspect-square">
               <img
                 src={image}
                 alt="product"

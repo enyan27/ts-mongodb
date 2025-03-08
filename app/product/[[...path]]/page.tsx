@@ -19,10 +19,9 @@ export default async function Page({ params }: { params: { path: string[] } }) {
 
   // Get product detail
   const product = await getProductById(id);
-  if (!product) return <div>Product not found</div>;
+
   // Get reviews and average rating for product
   const { reviews, averageRating } = await getReviewsAndRating(id);
-
 
   if (method === "edit") {
     return <AddProduct edit id={id} product={product} />;
@@ -37,14 +36,13 @@ export default async function Page({ params }: { params: { path: string[] } }) {
       <div className="flex flex-col gap-y-5">
         <span className="text-2xl font-bold h-fit">Customer Reviews</span>
         <div className="grid gap-5">
-          {reviews.map((review, index) => (
+          {reviews.length != 0 ? reviews.map((review, index) => (
             <ReviewDisplay review={review} key={index} />)
-          )}
-          {reviews.length === 0 && <div>No reviews yet</div>}
+          ) : <span className="text-lg">No reviews yet</span>}
         </div>
       </div>
       <div className="md:col-span-2">
-        <AddReview />
+        <AddReview productId={id} />
       </div>
     </div>
   );

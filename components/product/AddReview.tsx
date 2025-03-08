@@ -1,19 +1,28 @@
 "use client";
 
+import { createReview } from "@/lib/actions/reviews";
 import RatingSelect from "./Review/RatingSelect";
 
 import { useState } from "react";
 
-export default function Component() {
+export default function AddReview({ productId }: { productId: string }) {
   const [rating, setRating] = useState(0);
   const [name, setName] = useState("");
   const [review, setReview] = useState("");
 
-  const handleSubmit = (event: any) => {
+  const resetState = () => {
+    setRating(0);
+    setName('');
+    setReview('');
+  };
+
+  const handleSubmit = async (event: any) => {
     event.preventDefault();
 
-    console.log({ name, rating, review });
+    await createReview({ author: { name, email: 'example@gmail.com' }, rating, content: review, productId: productId });
+    resetState();
   };
+
   return (
     <section className="bg-gray-100 dark:bg-gray-800 p-6 rounded-lg shadow-md">
       <div className="max-w-2xl mx-auto">
